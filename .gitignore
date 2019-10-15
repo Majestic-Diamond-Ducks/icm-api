@@ -1,0 +1,7 @@
+# IDE
+.idea/
+
+# Compile
+target/
+out/
+*.class
