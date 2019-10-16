@@ -12,7 +12,7 @@
         </init-param>
         <init-param>
             <param-name>javax.ws.rs.Application</param-name>
-            <param-value>app.SensorStore</param-value>
+            <param-value>app.MeasurementStore</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
