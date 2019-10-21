@@ -22,6 +22,49 @@
                     <target>8</target>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>fish.payara.maven.plugins</groupId>
+                <artifactId>payara-micro-maven-plugin</artifactId>
+                <version>1.0.6</version>
+                <configuration>
+                    <payaraVersion>${version.payara}</payaraVersion>
+                    <deployWar>false</deployWar>
+                    <commandLineOptions>
+                        <option>
+                            <key>--autoBindHttp</key>
+                        </option>
+                        <option>
+                            <key>--deploy</key>
+                            <value>${project.build.directory}/${project.build.finalName}</value>
+                        </option>
+                    </commandLineOptions>
+                    <contextRoot>""</contextRoot>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>1.6.1</version>
+                <configuration>
+                    <from>
+                        <image>payara/micro:5.193</image>
+                    </from>
+                    <to>
+                        <image>${project.name}</image>
+                    </to>
+                    <container>
+                        <appRoot>/opt/payara/${project.name}</appRoot>
+                        <args>
+                            <arg>--deploy</arg>
+                            <arg>/opt/payara/${project.name}</arg>
+                            <arg>--contextroot</arg>
+                            <arg>/</arg>
+                        </args>
+                    </container>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -122,7 +165,6 @@
             <artifactId>jersey-media-multipart</artifactId>
             <version>2.29</version>
         </dependency>
-
     </dependencies>
 
     <properties>
