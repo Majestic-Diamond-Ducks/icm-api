@@ -1,4 +1,4 @@
-package app;
+package no.personligfrelser.icmapi.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,23 +10,11 @@ import javax.persistence.*;
  * This is an entity that has data from measurements. This class also holds a few of the
  * common queries that will be used by the controller.
  *
- * @see app.MeasurementStore
+ * @see no.personligfrelser.icmapi.model.Measurement
  */
 @Data
 @NoArgsConstructor
-@Entity(name = "Measurements")
-@JsonbPropertyOrder({"id", "clientName", "timestamp", "temperature", "humidity", "co2", "dust", "light"})
-@NamedQueries({
-		@NamedQuery(name = "getMeasurements", query = "SELECT sr FROM Measurements sr"),
-		@NamedQuery(name = "getMeasurementsFromDevice",
-				query = "SELECT sr FROM Measurements sr WHERE sr.clientName = :cn"),
-		@NamedQuery(name = "getAllMeasurementsFromWithDevice",
-				query = "SELECT sr FROM Measurements sr WHERE sr.clientName = :cn " +
-						"AND sr.timestamp BETWEEN :tf AND :tt"),
-		@NamedQuery(name = "getAllMeasurementsFrom",
-				query = "SELECT sr FROM Measurements sr WHERE sr.timestamp BETWEEN :tf AND :tt")
-
-})
+@Entity
 public class Measurement {
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;                 // auto generated identifier
