@@ -21,11 +21,11 @@ public class Measurement {
 	private String clientName;      // name of the device
 	private long timestamp;         // when the measurement was taken
 
-	private double temperature;
-	private double humidity;
-	private double co2;
-	private double dust;
-	private double light;
+	private float temperature;
+	private float humidity;
+	private float co2;
+	private float dust;
+	private float light;
 
 	/**
 	 * Constructor used to create the entity from the API requests and for test entries.
@@ -37,7 +37,7 @@ public class Measurement {
 	 * @param dust          measurement dust
 	 * @param light         measurement light
 	 */
-	public Measurement(String clientName, double temperature, double humidity, double co2, double dust, double light) {
+	public Measurement(String clientName, float temperature, float humidity, float co2, float dust, float light) {
 		this.clientName = clientName;
 		this.timestamp = System.currentTimeMillis(); // TODO Change this
 		this.temperature = temperature;
