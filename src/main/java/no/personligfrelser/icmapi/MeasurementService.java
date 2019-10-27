@@ -87,12 +87,11 @@ public class MeasurementService {
 			if (measurements.containsKey("N")) {
 				// If key 'N' is defined, we assume the json is formatted correctly
 				String clientName =  (String) measurements.get("N");
-				float temp =        (float) measurements.get("T");
-				float humidity =    (float) measurements.get("H");
-				float co2 =         (float) measurements.get("C");
-				float dust =        (float) measurements.get("D");
-				float light =       (float) measurements.get("L");
-				// TODO add "mode" parameter
+				float temp =        Float.parseFloat(measurements.get("T").toString());
+				float humidity =    Float.parseFloat(measurements.get("H").toString());
+				float co2 =         Float.parseFloat(measurements.get("C").toString());
+				float dust =        Float.parseFloat(measurements.get("D").toString());
+				float light =       Float.parseFloat(measurements.get("L").toString());
 
 				// Create the measurement entity and add it to the database
 				m = new Measurement(clientName, temp, humidity, co2, dust, light);
