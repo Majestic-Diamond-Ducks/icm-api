@@ -5,6 +5,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -48,9 +50,9 @@ public class MeasurementService {
 	 * @return                  a list of measurements within constraints
 	 */
 	@GetMapping
-	public List<Measurement> getMeasurements(@RequestParam(required = false, defaultValue = "0") long from,
-	                                         @RequestParam(required = false, defaultValue = "0") long to,
-	                                         @RequestParam(required = false) String device) {
+	public ResponseEntity getMeasurements(@RequestParam(required = false, defaultValue = "0") long from,
+	                                      @RequestParam(required = false, defaultValue = "0") long to,
+	                                      @RequestParam(required = false) String device) {
 
 		// If timestamp end range is 0 (i.e. empty), set it to the current time
 		to = (to == 0) ? System.currentTimeMillis() : to;
@@ -65,7 +67,7 @@ public class MeasurementService {
 			measurements = mRepo.findAllByClientNameAndTimestampBetween(device, from, to);
 		}
 
-		return measurements;
+		return new ResponseEntity<List>(measurements, HttpStatus.OK);
 	}
 
 	/**
@@ -75,7 +77,7 @@ public class MeasurementService {
 	 * @return      the same measurement, but with variables such as 'id' added
 	 */
 	@PostMapping
-	public Measurement create(@RequestBody String json) {
+	public ResponseEntity create(@RequestBody String json) {
 		// Parse the entire json object and get the measurements
 		JSONObject measurements = null;
 		Measurement m = null;
@@ -97,25 +99,26 @@ public class MeasurementService {
 				m = mRepo.saveAndFlush(m);
 
 				// If the entity is created (not null), the default response will change into '200 OK'
-				//r = (sr != null) ? Response.ok() : Response.status(Response.Status.NOT_ACCEPTABLE);
+				return  (m != null) ? ResponseEntity.ok().build() : new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
 			} else {
 				// JSON object does not contain key 'N', therefore not formatted correctly
 				// Set response to '400 BAD REQUEST'
-				//r = Response.status(Response.Status.BAD_REQUEST).entity("Malformed request body");
+				return ResponseEntity.badRequest().body("Malformed request body");
 			}
 		} catch (ParseException e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
+			// The format of provided json is not correct
+			return ResponseEntity.badRequest().body("Malformed request body");
 		}
-
-		return m;
 	}
 
 	/**
 	 * Deletes all measurements from database.
 	 */
 	@DeleteMapping("/delete/all")
-	public void deleteAll() {
+	public ResponseEntity deleteAll() {
 		mRepo.deleteAll();
+		return ResponseEntity.ok().build();
 	}
 
 	/**
@@ -123,7 +126,7 @@ public class MeasurementService {
 	 * @return   a list of measurements after they have been added to database
 	 */
 	@GetMapping("/populate")
-	public List<Measurement> addDummyData() {
+	public ResponseEntity addDummyData() {
 		// Define measurements
 		Measurement s1 = new Measurement("test", 0, 2, 3,1,0)
 				.setRandomTimestamp();
@@ -137,9 +140,11 @@ public class MeasurementService {
 		// Add measurements to database
 		List<Measurement> measurements = new ArrayList<>(Arrays.asList(s1, s2, s3, s4));
 		mRepo.saveAll(measurements);
+
+		// Update the provided measurements with id etc.
 		mRepo.flush();
 
-		return measurements;
+		return ResponseEntity.ok(measurements);
 	}
 
 }
