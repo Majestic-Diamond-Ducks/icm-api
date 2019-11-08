@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class Database {
 	private static final String driver = "com.mysql.jdbc.Driver";
-	private static final String url = "jdbc:mysql://localhost/icm_api";
+	private static final String url = "jdbc:mysql://localhost/icm_api?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 	private static final String username = "root";
 	private static final String password = "";
 

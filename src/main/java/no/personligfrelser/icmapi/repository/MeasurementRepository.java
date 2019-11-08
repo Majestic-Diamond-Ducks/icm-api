@@ -80,7 +80,7 @@ public class MeasurementRepository {
 				} else if (p.getClass() == Integer.class) {
 					pstmt.setInt(i + 1, (int) p);
 				} else if (p.getClass() == Timestamp.class) {
-					pstmt.setTimestamp(i + 1, new Timestamp((Long) p));
+					pstmt.setTimestamp(i + 1, (Timestamp) p);
 				} else if (p.getClass() == Long.class) {
 					pstmt.setLong(i + 1, (long) p);
 				} else {
