@@ -1,59 +1,37 @@
 package no.personligfrelser.icmapi.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.json.bind.annotation.JsonbPropertyOrder;
-import javax.persistence.*;
+import java.sql.Timestamp;
+import java.util.Map;
 
-/**
- * This is an entity that has data from measurements. This class also holds a few of the
- * common queries that will be used by the controller.
- *
- * @see no.personligfrelser.icmapi.model.Measurement
- */
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
-@Entity
-public class Measurement {
-	@Id @GeneratedValue(strategy = GenerationType.AUTO)
-	private int id;                 // auto generated identifier
-	private String clientName;      // name of the device
-	private long timestamp;         // when the measurement was taken
+public class Measurement {    // Measurement Meta
+	private int id;
+	private String deviceName;
+	private Timestamp timestamp;
 
-	private float temperature;
-	private float humidity;
-	private float co2;
-	private float dust;
-	private float light;
+	private Map<String, Float> temp;
+	private Map<String, Float> co2;
+	private Map<String, Float> humidity;
+	private Map<String, Float> dust;
+	private Map<String, Float> light;
 
-	/**
-	 * Constructor used to create the entity from the API requests and for test entries.
-	 *
-	 * @param clientName    device name
-	 * @param temperature   measurement temperature
-	 * @param humidity      measurement humidity
-	 * @param co2           measurement co2
-	 * @param dust          measurement dust
-	 * @param light         measurement light
-	 */
-	public Measurement(String clientName, float temperature, float humidity, float co2, float dust, float light) {
-		this.clientName = clientName;
-		this.timestamp = System.currentTimeMillis(); // TODO Change this
-		this.temperature = temperature;
-		this.humidity = humidity;
+	public Measurement(String deviceName, Timestamp timestamp, Map<String, Float> temp,
+	                   Map<String, Float> co2, Map<String, Float> humidity,
+	                   Map<String, Float> dust, Map<String, Float> light) {
+
+		this.deviceName = deviceName;
+		this.timestamp = timestamp;
+
+		this.temp = temp;
 		this.co2 = co2;
+		this.humidity = humidity;
 		this.dust = dust;
 		this.light = light;
-	}
-
-	/**
-	 * Set a random timestamp for when the measurement was taken.
-	 *
-	 * @return this instance
-	 */
-	public Measurement setRandomTimestamp() {
-		this.timestamp = timestamp - ((long) (Math.random() * 100000));
-		return this;
 	}
 }

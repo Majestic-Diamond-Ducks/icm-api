@@ -1,20 +1,12 @@
 package no.personligfrelser.icmapi;
 import no.personligfrelser.icmapi.model.Measurement;
 import no.personligfrelser.icmapi.repository.MeasurementRepository;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * This is where all the endpoints are defined for the different functions.
@@ -29,11 +21,11 @@ import java.util.List;
 @RestController @RequestMapping("/v1/sensors")
 public class MeasurementService {
 
-	private MeasurementRepository mRepo;
+	private MeasurementRepository m2Repo;
 
 	@Autowired
-	public MeasurementService(MeasurementRepository mRepo) {
-		this.mRepo = mRepo;
+	public MeasurementService(MeasurementRepository m2Repo) {
+		this.m2Repo = m2Repo;
 	}
 
 	/**
@@ -49,66 +41,25 @@ public class MeasurementService {
 	 *
 	 * @return                  a list of measurements within constraints
 	 */
-	@GetMapping
-	public ResponseEntity getMeasurements(@RequestParam(required = false, defaultValue = "0") long from,
-	                                      @RequestParam(required = false, defaultValue = "0") long to,
-	                                      @RequestParam(required = false) String device) {
-
+	@RequestMapping(value = "/get", method = RequestMethod.GET, produces = "application/json")
+	public ResponseEntity getV2(@RequestParam(required = false, defaultValue = "0") long from,
+	                            @RequestParam(required = false, defaultValue = "0") long to,
+	                            @RequestParam(required = false) String device) {
 		// If timestamp end range is 0 (i.e. empty), set it to the current time
 		to = (to == 0) ? System.currentTimeMillis() : to;
+		System.out.println(from + " : " + to);
 
 		List<Measurement> measurements = null;
 
 		// Get measurements from the database
 		if (device == null) {
 			// Get records from all devices within a time period
-			measurements = mRepo.findAllByTimestampBetween(from, to);
+			measurements = m2Repo.findAllByTimestampBetween(from, to);
 		} else{
-			measurements = mRepo.findAllByClientNameAndTimestampBetween(device, from, to);
+			measurements = m2Repo.findAllByClientNameAndTimestampBetween(device, from, to);
 		}
 
 		return new ResponseEntity<List>(measurements, HttpStatus.OK);
-	}
-
-	/**
-	 * Add single (partially or fully defined) measurement to database.
-	 *
-	 * @param json  measurement to commit to database provided as json
-	 * @return      the same measurement, but with variables such as 'id' added
-	 */
-	@PostMapping
-	public ResponseEntity create(@RequestBody String json) {
-		// Parse the entire json object and get the measurements
-		JSONObject measurements = null;
-		Measurement m = null;
-		try {
-			measurements = (JSONObject) new JSONParser().parse(json);
-
-			if (measurements.containsKey("N")) {
-				// If key 'N' is defined, we assume the json is formatted correctly
-				String clientName =  (String) measurements.get("N");
-				float temp =        Float.parseFloat(measurements.get("T").toString());
-				float humidity =    Float.parseFloat(measurements.get("H").toString());
-				float co2 =         Float.parseFloat(measurements.get("C").toString());
-				float dust =        Float.parseFloat(measurements.get("D").toString());
-				float light =       Float.parseFloat(measurements.get("L").toString());
-
-				// Create the measurement entity and add it to the database
-				m = new Measurement(clientName, temp, humidity, co2, dust, light);
-				m = mRepo.saveAndFlush(m);
-
-				// If the entity is created (not null), the default response will change into '200 OK'
-				return  (m != null) ? ResponseEntity.ok().build() : new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
-			} else {
-				// JSON object does not contain key 'N', therefore not formatted correctly
-				// Set response to '400 BAD REQUEST'
-				return ResponseEntity.badRequest().body("Malformed request body");
-			}
-		} catch (ParseException e) {
-			System.out.println(e.getMessage());
-			// The format of provided json is not correct
-			return ResponseEntity.badRequest().body("Malformed request body");
-		}
 	}
 
 	/**
@@ -116,34 +67,7 @@ public class MeasurementService {
 	 */
 	@DeleteMapping("/delete/all")
 	public ResponseEntity deleteAll() {
-		mRepo.deleteAll();
+		//mRepo.deleteAll();
 		return ResponseEntity.ok().build();
 	}
-
-	/**
-	 * Populates the database with test measurements.
-	 * @return   a list of measurements after they have been added to database
-	 */
-	@GetMapping("/populate")
-	public ResponseEntity addDummyData() {
-		// Define measurements
-		Measurement s1 = new Measurement("test", 0, 2, 3,1,0)
-				.setRandomTimestamp();
-		Measurement s2 = new Measurement("test2", 10, 27, 473,162,99)
-				.setRandomTimestamp();
-		Measurement s3 = new Measurement("test3", 150, 277, 438,125,99)
-				.setRandomTimestamp();
-		Measurement s4 = new Measurement("test", 1980, 287, 43,1,99)
-				.setRandomTimestamp();
-
-		// Add measurements to database
-		List<Measurement> measurements = new ArrayList<>(Arrays.asList(s1, s2, s3, s4));
-		mRepo.saveAll(measurements);
-
-		// Update the provided measurements with id etc.
-		mRepo.flush();
-
-		return ResponseEntity.ok(measurements);
-	}
-
 }
