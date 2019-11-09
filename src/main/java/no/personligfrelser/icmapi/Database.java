@@ -10,12 +10,12 @@ import java.sql.*;
 public class Database {
 	private static final String driver = "com.mysql.jdbc.Driver";
 
-	@Value("${db.url}")
-	private static String url;
+	@Value(value = "${db.url}")
+	private String url;
 	@Value("${db.username}")
-	private static String username;
+	private String username;
 	@Value("${db.password}")
-	private static String password;
+	private String password;
 
 	private Connection db;
 
