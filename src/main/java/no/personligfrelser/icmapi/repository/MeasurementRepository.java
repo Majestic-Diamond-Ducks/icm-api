@@ -3,6 +3,7 @@ package no.personligfrelser.icmapi.repository;
 import no.personligfrelser.icmapi.Database;
 import no.personligfrelser.icmapi.MeasurementUtils;
 import no.personligfrelser.icmapi.model.Measurement;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -38,13 +39,9 @@ public class MeasurementRepository {
 		put("ALL_FROM_DEVICE_AND_TIMESTAMP", BASE_QUERY + " WHERE mm.timestamp BETWEEN ? AND ? WHERE d.name = ?");
 	}};
 
-	public MeasurementRepository() {
-		try {
-			db = new Database();
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Couldn't establish connection with database!");
-		}
+	@Autowired
+	public MeasurementRepository(Database db) {
+		this.db = db;
 	}
 
 	public List<Measurement> findAllByTimestampBetween(long from, long to) {
