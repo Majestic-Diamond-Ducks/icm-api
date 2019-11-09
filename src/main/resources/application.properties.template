@@ -1,0 +1,7 @@
+# Server
+server.port=8080
+
+#MySQL
+db.url=jdbc:mysql://localhost/icm_api?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+db.username=
+db.password=

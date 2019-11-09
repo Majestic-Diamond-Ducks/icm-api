@@ -1,19 +1,33 @@
 package no.personligfrelser.icmapi;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 import java.sql.*;
 
+@Component
 public class Database {
 	private static final String driver = "com.mysql.jdbc.Driver";
-	private static final String url = "jdbc:mysql://localhost/icm_api?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
-	private static final String username = "root";
-	private static final String password = "";
 
-	private final Connection db;
+	@Value("${db.url}")
+	private static String url;
+	@Value("${db.username}")
+	private static String username;
+	@Value("${db.password}")
+	private static String password;
 
-	public Database() throws Exception {
-		// Register JDBC driver and create a connection to db
-		Class.forName("com.mysql.cj.jdbc.Driver");
-		db = DriverManager.getConnection(url, username, password);
+	private Connection db;
+
+	@PostConstruct
+	private void init() {
+		try {
+			// Register JDBC driver and create a connection to db
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			db = DriverManager.getConnection(url, username, password);
+		} catch (Exception e) {
+			System.out.println("Couldn't establish connection to database.");
+		}
 	}
 
 	public ResultSet query(String sql) {
