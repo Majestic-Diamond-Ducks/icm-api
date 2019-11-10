@@ -30,13 +30,13 @@ public class MeasurementRepository {
 					"LEFT OUTER JOIN measurements AS hum ON mm.id = hum.mm_id AND hum.type = \"humidity\" " +
 					"LEFT OUTER JOIN measurements AS dust ON mm.id = dust.mm_id AND dust.type = \"dust\" " +
 					"LEFT OUTER JOIN measurements AS light ON mm.id = light.mm_id AND light.type = \"light\" " /*+
-					"ORDER BY mm.id DESC"*/;   // Adding condition under this element casts SQL exception
+					"ORDER BY mm.id DESC"*/;   // Adding condition under this statement casts SQL exception
 
 	private Map measurement = new HashMap<String, String>() {{
 		put("ALL", BASE_QUERY);
 		put("SINGLE", BASE_QUERY + " WHERE mm.id = ? LIMIT 1");
 		put("ALL_BETWEEN_TIMESTAMP", BASE_QUERY + " WHERE mm.timestamp BETWEEN ? AND ?");
-		put("ALL_FROM_DEVICE_AND_TIMESTAMP", BASE_QUERY + " WHERE mm.timestamp BETWEEN ? AND ? WHERE d.name = ?");
+		put("ALL_FROM_DEVICE_AND_TIMESTAMP", BASE_QUERY + " WHERE mm.timestamp BETWEEN ? AND ? AND d.name = ?");
 	}};
 
 	@Autowired
