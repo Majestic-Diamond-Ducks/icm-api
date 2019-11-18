@@ -22,6 +22,7 @@ public class MeasurementUtils {
 			tableAlias = tableAlias.concat("."); // Add comma separator to get the table name
 		}
 
+		map.put("current", rs.getFloat(tableAlias.concat("current")));
 		map.put("min", rs.getFloat(tableAlias.concat("min")));
 		map.put("max", rs.getFloat(tableAlias.concat("max")));
 		map.put("avg", rs.getFloat(tableAlias.concat("avg")));
