@@ -19,6 +19,7 @@ import java.util.*;
  * @see no.personligfrelser.icmapi.model.Measurement
  */
 @RestController @RequestMapping("/v1/sensors")
+@CrossOrigin(origins = "*")
 public class MeasurementService {
 
 	private MeasurementRepository m2Repo;
