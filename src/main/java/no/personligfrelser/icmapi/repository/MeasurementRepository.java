@@ -3,6 +3,7 @@ package no.personligfrelser.icmapi.repository;
 import no.personligfrelser.icmapi.Database;
 import no.personligfrelser.icmapi.MeasurementUtils;
 import no.personligfrelser.icmapi.model.Measurement;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("SqlDialectInspection")
 @Repository
 public class MeasurementRepository {
 	private Database db;
@@ -102,5 +104,73 @@ public class MeasurementRepository {
 		}
 
 		return measurements;
+	}
+
+	public void insertMeasurements(List<Measurement> measurements) {
+		measurements.forEach(m -> {
+			int deviceId = 0;
+			int measurementMetaId = 0;
+
+			try {
+				// Check if device exists, then get/add device id
+				PreparedStatement getDevice = db.getDb().prepareStatement("SELECT id FROM devices WHERE name = ?");
+				getDevice.setString(1, m.getDeviceName());
+				getDevice.setMaxRows(1);
+
+				ResultSet rs = getDevice.executeQuery();
+
+				// If device exist, get device id, else create new device and get its id
+				if (!rs.wasNull()) {
+					rs.next();
+					deviceId = rs.getInt("id");
+				} else {
+					PreparedStatement ps2 = db.getDb().prepareStatement("INSERT INTO device(`name`) VALUES(?)");
+					ps2.setString(1, m.getDeviceName());
+
+					ResultSet rs2 = ps2.getGeneratedKeys();
+					rs2.next();
+					deviceId = rs2.getInt(1);
+				}
+
+				// Create new measurement meta data and get its id
+				String insertMeasurementMeta = "INSERT INTO measurement_meta(`timestamp`, `device_id`) VALUES(?, ?)";
+				PreparedStatement ps3 = db.getDb().prepareStatement(insertMeasurementMeta);
+				ps3.setTimestamp(1, m.getTimestamp());
+				ps3.setInt(2, deviceId);
+
+				ResultSet rs3 = ps3.getGeneratedKeys();
+				rs3.next();
+				measurementMetaId = rs3.getInt(1);
+
+
+				// Add each measurement types and link each of them to the same measurement meta data
+				insertMeasurementElements(measurementMetaId, "temperature", m.getTemp());
+				insertMeasurementElements(measurementMetaId, "humidity", m.getHumidity());
+				insertMeasurementElements(measurementMetaId, "co2", m.getCo2());
+				insertMeasurementElements(measurementMetaId, "dust", m.getDust());
+				insertMeasurementElements(measurementMetaId, "light", m.getLight());
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+	}
+
+	private void insertMeasurementElements(int measurementMetaId,
+	                                       String type, Map<String, Float> map) throws SQLException {
+
+		String sql = "INSERT INTO measurement(`type`, mm_id, `current`, `min`, `max`, `avg`, llm, hlm)" +
+				" VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+		PreparedStatement ps = db.getDb().prepareStatement(sql);
+
+		ps.setString(1, type);
+		ps.setInt(2, measurementMetaId);
+
+		ps.setFloat(3, map.get("current"));
+		ps.setFloat(4, map.get("min"));
+		ps.setFloat(5, map.get("max"));
+		ps.setFloat(6, map.get("avg"));
+		ps.setFloat(7, map.get("llm"));
+		ps.setFloat(8, map.get("hlm"));
 	}
 }
