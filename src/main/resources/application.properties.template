@@ -5,3 +5,8 @@ server.port=8080
 db.url=jdbc:mysql://localhost/icm_api?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
 db.username=
 db.password=
+
+
+# Collector
+collector.host=158.38.101.99
+collector.port=6789
