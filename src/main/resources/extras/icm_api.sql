@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: 08. Nov, 2019 23:32 PM
+-- Generation Time: 21. Nov, 2019 12:50 PM
 -- Tjener-versjon: 10.4.6-MariaDB
 -- PHP Version: 7.3.8
 
@@ -21,8 +21,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `icm_api`
 --
-CREATE DATABASE IF NOT EXISTS `icm_api` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
-USE `icm_api`;
 
 -- --------------------------------------------------------
 
@@ -107,7 +105,8 @@ ALTER TABLE `devices`
 -- Indexes for table `measurements`
 --
 ALTER TABLE `measurements`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `m_index` (`mm_id`,`type`);
 
 --
 -- Indexes for table `measurement_meta`
@@ -123,19 +122,19 @@ ALTER TABLE `measurement_meta`
 -- AUTO_INCREMENT for table `devices`
 --
 ALTER TABLE `devices`
-  MODIFY `id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `measurements`
 --
 ALTER TABLE `measurements`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `measurement_meta`
 --
 ALTER TABLE `measurement_meta`
-  MODIFY `id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
