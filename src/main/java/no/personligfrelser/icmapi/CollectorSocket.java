@@ -55,17 +55,21 @@ public class CollectorSocket {
 					// Read input stream and get store the whole message received
 					while ((s = input.readLine()) != null) {
 						sb.append(s);
+						if (!s.equals("[]")) {
+							if (s.equals("}]")) { // EOF Json
+								// Convert the json message to measurement instances
+								List<Measurement> measurements = MeasurementUtils.convertJsonToObject(sb.toString());
+								addMeasurement(measurements);
+
+								sb = new StringBuilder();
+							}
+						} else {
+							System.out.println("I zhleepf... No message :(");
+						}
+
 					}
-
-					if (!sb.toString().equalsIgnoreCase("null") && !sb.toString().isEmpty()) {
-						System.out.println(sb.toString());
-
-						// Convert the json message to measurement instances
-						List<Measurement> measurements = MeasurementUtils.convertJsonToObject(sb.toString());
-						addMeasurement(measurements);
-					}
-
 				} catch (Exception e) {
+					e.printStackTrace();
 					System.err.println("Couldn't open a socket");
 				}
 			}

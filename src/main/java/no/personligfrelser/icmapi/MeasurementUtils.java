@@ -61,20 +61,31 @@ public class MeasurementUtils {
 				String deviceName = vO.get("NAME").toString();
 				Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-				Map<String, Float> temp     = (Map<String, Float>) vO.get(0);
-				Map<String, Float> co2      = (Map<String, Float>) vO.get(3);
-				Map<String, Float> hum      = (Map<String, Float>) vO.get(1);
-				Map<String, Float> dust     = (Map<String, Float>) vO.get(4);
-				Map<String, Float> light    = (Map<String, Float>) vO.get(2);
+				Map<String, Float> temp     = convertDoubleToFloatMap((Map<String, Object>) vO.get("TEMP"));
+				Map<String, Float> co2      = convertDoubleToFloatMap((Map<String, Object>) vO.get("CO2"));
+				Map<String, Float> hum      = convertDoubleToFloatMap((Map<String, Object>) vO.get("HUMIDITY"));
+				Map<String, Float> dust     = convertDoubleToFloatMap((Map<String, Object>) vO.get("DUST"));
+				Map<String, Float> light    = convertDoubleToFloatMap((Map<String, Object>) vO.get("LIGHT"));
 
 				Measurement m = new Measurement(deviceName, timestamp, temp, co2, hum, dust, light);
 				measurements.get().add(m);
 
 			} catch (Exception e) {
 				e.printStackTrace();
+				System.out.println(json);
 			}
 		});
 
 		return measurements.get();
+	}
+
+	public static Map<String, Float> convertDoubleToFloatMap(Map<String, Object> doubleMap) {
+		Map<String, Float> floatMap = new HashMap<String, Float>();
+
+		for (Map.Entry<String, Object> entry : doubleMap.entrySet()) {
+			floatMap.put(entry.getKey(), Float.valueOf(entry.getValue().toString()));
+		}
+
+		return floatMap;
 	}
 }
