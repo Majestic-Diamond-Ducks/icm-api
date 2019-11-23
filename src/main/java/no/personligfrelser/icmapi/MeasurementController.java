@@ -1,11 +1,12 @@
 package no.personligfrelser.icmapi;
 import no.personligfrelser.icmapi.model.Measurement;
-import no.personligfrelser.icmapi.repository.MeasurementRepository;
+import no.personligfrelser.icmapi.repository.MeasurementRepositoryDeprecated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -18,14 +19,14 @@ import java.util.*;
  *
  * @see no.personligfrelser.icmapi.model.Measurement
  */
-@RestController @RequestMapping("/v1/sensors")
+@RestController @RequestMapping("/measurements")
 @CrossOrigin(origins = "*")
-public class MeasurementService {
+public class MeasurementController {
 
 	private MeasurementRepository m2Repo;
 
 	@Autowired
-	public MeasurementService(MeasurementRepository m2Repo) {
+	public MeasurementController(MeasurementRepository m2Repo) {
 		this.m2Repo = m2Repo;
 	}
 
@@ -42,7 +43,7 @@ public class MeasurementService {
 	 *
 	 * @return                  a list of measurements within constraints
 	 */
-	@RequestMapping(value = "/get", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity getV2(@RequestParam(required = false, defaultValue = "0") long from,
 	                            @RequestParam(required = false, defaultValue = "0") long to,
 	                            @RequestParam(required = false) String device) {
@@ -55,9 +56,9 @@ public class MeasurementService {
 		// Get measurements from the database
 		if (device == null) {
 			// Get records from all devices within a time period
-			measurements = m2Repo.findAllByTimestampBetween(from, to);
+			measurements = m2Repo.findAllMeasurementsByTime(from, to);
 		} else{
-			measurements = m2Repo.findAllByClientNameAndTimestampBetween(device, from, to);
+			measurements = m2Repo.findAllMeasurementsByDeviceNameAndTime(device, from, to);
 		}
 
 		return new ResponseEntity<List>(measurements, HttpStatus.OK);

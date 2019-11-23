@@ -1,6 +1,6 @@
 package no.personligfrelser.icmapi;
 
-import no.personligfrelser.icmapi.repository.MeasurementRepository;
+import no.personligfrelser.icmapi.repository.MeasurementRepositoryDeprecated;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,10 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class ApiTests {
 
-	public MeasurementRepository repo;
+	public MeasurementRepositoryDeprecated repo;
 
 	@Autowired
-	public ApiTests(MeasurementRepository repo) {
+	public ApiTests(MeasurementRepositoryDeprecated repo) {
 		this.repo = repo;
 	}
 

@@ -15,7 +15,8 @@ import java.util.Map;
 
 @SuppressWarnings("SqlDialectInspection")
 @Repository
-public class MeasurementRepository {
+@Deprecated
+public class MeasurementRepositoryDeprecated {
 	private Database db;
 	// Device queries
 	private Map device = new HashMap<String, String>() {{
@@ -42,7 +43,7 @@ public class MeasurementRepository {
 	}};
 
 	@Autowired
-	public MeasurementRepository(Database db) {
+	public MeasurementRepositoryDeprecated(Database db) {
 		this.db = db;
 	}
 

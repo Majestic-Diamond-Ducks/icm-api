@@ -1,7 +1,7 @@
 package no.personligfrelser.icmapi;
 
 import no.personligfrelser.icmapi.model.Measurement;
-import no.personligfrelser.icmapi.repository.MeasurementRepository;
+import no.personligfrelser.icmapi.repository.MeasurementRepositoryDeprecated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.*;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.List;
 
 @Component
@@ -24,10 +23,10 @@ public class CollectorSocket {
 	private BufferedReader input;
 	private PrintWriter output;
 
-	private MeasurementRepository repo;
+	private MeasurementRepositoryDeprecated repo;
 
 	@Autowired
-	public CollectorSocket(MeasurementRepository repo) {
+	public CollectorSocket(MeasurementRepositoryDeprecated repo) {
 		this.repo = repo;
 	}
 
@@ -64,7 +63,7 @@ public class CollectorSocket {
 								sb = new StringBuilder();
 							}
 						} else {
-							System.out.println("I zhleepf... No message :(");
+							//System.out.println("I zhleepf... No message :(");
 						}
 
 					}
