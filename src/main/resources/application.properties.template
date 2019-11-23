@@ -3,10 +3,14 @@ server.port=8080
 
 #MySQL
 db.url=jdbc:mysql://localhost/icm_api?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
-db.username=
+db.username=root
 db.password=
 
+## MySQL JDBC
+spring.datasource.url=jdbc:mysql://localhost:3306/icm_api
+spring.datasource.username=root
+spring.datasource.password=
 
 # Collector
 collector.host=158.38.101.99
-collector.port=6789
+collector.port=6969
