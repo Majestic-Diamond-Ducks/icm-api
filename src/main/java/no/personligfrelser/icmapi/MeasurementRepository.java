@@ -9,4 +9,5 @@ public interface MeasurementRepository {
 	List<Measurement> findAllMeasurementsByTime(long from, long to);
 	List<Measurement> findAllMeasurementsByDeviceNameAndTime(String device, long from, long to);
 	int save(Measurement m);
+	void deleteAll();
 }

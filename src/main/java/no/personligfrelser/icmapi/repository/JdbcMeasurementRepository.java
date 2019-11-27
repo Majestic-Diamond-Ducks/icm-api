@@ -19,12 +19,7 @@ public class JdbcMeasurementRepository implements MeasurementRepository {
 	private final JdbcTemplate jdbc;
 	private final MeasurementMapper mapper;
 
-	private Map device = new HashMap<String, String>() {{
-		put("GET_ALL", "SELECT * FROM devices");
-		put("GET_SINGLE", "SELECT * FROM devices WHERE id = ? LIMIT 1");
-	}};
-
-	// Measurement queries
+	// Measurement queries used as starting point
 	private static final String BASE_QUERY =
 			"SELECT * FROM `measurement_meta` AS mm " +
 					"JOIN devices AS d ON mm.device_id = d.id " +
@@ -50,7 +45,7 @@ public class JdbcMeasurementRepository implements MeasurementRepository {
 
 	@Override
 	public List<Measurement> findAllMeasurements() {
-		return jdbc.query(measurement.get("ALL").toString().concat(" ORDER BY mm.id DESC"), mapper);
+		return jdbc.query(measurement.get("ALL").toString().concat(" ORDER BY mm.id DESC LIMIT 10"), mapper);
 	}
 
 	@Override
@@ -160,5 +155,12 @@ public class JdbcMeasurementRepository implements MeasurementRepository {
 
 		jdbc.batchUpdate(insertMeasurement, params);
 		return 1;
+	}
+
+	@Override
+	public void deleteAll() {
+		jdbc.update("DELETE FROM measurements_meta WHERE id > 2");
+		jdbc.update("DELETE FROM measurements WHERE id > 6");
+		jdbc.update("DELETE FROM devices WHERE id > 2");
 	}
 }

@@ -1,6 +1,6 @@
 package no.personligfrelser.icmapi;
 import no.personligfrelser.icmapi.model.Measurement;
-import no.personligfrelser.icmapi.repository.MeasurementRepositoryDeprecated;
+import no.personligfrelser.icmapi.repository.JdbcMeasurementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import java.util.*;
  *
  * For getting and publishing measurement, it uses the measurement store.
  *
- * Context: http://localhost:8080/v1/sensor/ or {domain}/v1/sensor/
+ * Context: http://localhost:8080/measurements/ or {domain}/measurements/
  *
  * @see no.personligfrelser.icmapi.model.Measurement
  */
@@ -26,7 +26,7 @@ public class MeasurementController {
 	private MeasurementRepository m2Repo;
 
 	@Autowired
-	public MeasurementController(MeasurementRepository m2Repo) {
+	public MeasurementController(JdbcMeasurementRepository m2Repo) {
 		this.m2Repo = m2Repo;
 	}
 
@@ -34,8 +34,8 @@ public class MeasurementController {
 	 * Returns measurements from device and between timestamps if any of the parameters are
 	 * defined, otherwise return all measurements. You can drop and mix any parameters you want.
 	 *
-	 * Example URI: http://localhost:8080/v1/sensor/?device=test&from=1579283&to=15796352   (GET)
-	 * Example URI: http://localhost:8080/v1/sensor/?device=test&to=15796352                (GET)
+	 * Example URI: http://localhost:8080/measurements/?device=test&from=1579283&to=15796352   (GET)
+	 * Example URI: http://localhost:8080/measurements/?device=test&to=15796352                (GET)
 	 *
 	 * @param from              measurements FROM a specific time       (default value is 0)
 	 * @param to                measurements TO a specific time         (default value is current time)
@@ -44,21 +44,26 @@ public class MeasurementController {
 	 * @return                  a list of measurements within constraints
 	 */
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
-	public ResponseEntity getV2(@RequestParam(required = false, defaultValue = "0") long from,
+	public ResponseEntity getMeasurements(@RequestParam(required = false, defaultValue = "0") long from,
 	                            @RequestParam(required = false, defaultValue = "0") long to,
 	                            @RequestParam(required = false) String device) {
-		// If timestamp end range is 0 (i.e. empty), set it to the current time
-		to = (to == 0) ? System.currentTimeMillis() : to;
-		System.out.println(from + " : " + to);
 
 		List<Measurement> measurements = null;
 
 		// Get measurements from the database
 		if (device == null) {
-			// Get records from all devices within a time period
-			measurements = m2Repo.findAllMeasurementsByTime(from, to);
+			if (from == 0 && to == 0) {
+				// If no time constraints aren't defined, return all measurements
+				measurements = m2Repo.findAllMeasurements();
+			} else {
+				// If timestamp end range is 0 (i.e. empty), set it to the current time
+				to = (to == 0) ? System.currentTimeMillis() : to;
+				// Get records from all devices within a time period
+				measurements = m2Repo.findAllMeasurementsByTime(from, to);
+			}
+
 		} else{
-			measurements = m2Repo.findAllMeasurementsByDeviceNameAndTime(device, from, to);
+			measurements = m2Repo.findAllMeasurementsByDeviceNameAndTime(device, from, (to == 0) ? System.currentTimeMillis() : to);
 		}
 
 		return new ResponseEntity<List>(measurements, HttpStatus.OK);
@@ -69,7 +74,7 @@ public class MeasurementController {
 	 */
 	@DeleteMapping("/delete/all")
 	public ResponseEntity deleteAll() {
-		//mRepo.deleteAll();
+		m2Repo.deleteAll();
 		return ResponseEntity.ok().build();
 	}
 }

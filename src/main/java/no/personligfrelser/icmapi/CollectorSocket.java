@@ -1,7 +1,7 @@
 package no.personligfrelser.icmapi;
 
 import no.personligfrelser.icmapi.model.Measurement;
-import no.personligfrelser.icmapi.repository.MeasurementRepositoryDeprecated;
+import no.personligfrelser.icmapi.repository.JdbcMeasurementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,14 +23,14 @@ public class CollectorSocket {
 	private BufferedReader input;
 	private PrintWriter output;
 
-	private MeasurementRepositoryDeprecated repo;
+	private MeasurementRepository repo;
 
 	@Autowired
-	public CollectorSocket(MeasurementRepositoryDeprecated repo) {
+	public CollectorSocket(JdbcMeasurementRepository repo) {
 		this.repo = repo;
 	}
 
-	@PostConstruct
+	//@PostConstruct
 	public void init() {
 		try {
 			con = new Socket(host, port);
@@ -58,7 +58,7 @@ public class CollectorSocket {
 							if (s.equals("}]")) { // EOF Json
 								// Convert the json message to measurement instances
 								List<Measurement> measurements = MeasurementUtils.convertJsonToObject(sb.toString());
-								addMeasurement(measurements);
+								addMeasurements(measurements);
 
 								sb = new StringBuilder();
 							}
@@ -77,7 +77,7 @@ public class CollectorSocket {
 		t.start();
 	}
 
-	private void addMeasurement(List<Measurement> measurements) {
-		repo.insertMeasurements(measurements);
+	private void addMeasurements(List<Measurement> measurements) {
+		measurements.forEach(repo::save);
 	}
 }
