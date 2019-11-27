@@ -18,12 +18,15 @@ Configure the MySQL database:
 sudo mysql_secure_installation
 ```
 
+Import the database inside `src/main/resources/extras/icm_api.sql` to the database.
+
 Clone the project:
 ```bash
 git clone https://github.com/Majestic-Diamond-Ducks/icm-api.git
 ```
 
-Configure the file inside `src/main/resources/application.properties.template` and copy it to `src/main/resources/application.properties`
+Copy `src/main/resources/application.properties.template`  to `src/main/resources/application.properties` and set
+appropriate values for database.
 
 Run the API (while in the root directory of the project):
 ```bash
