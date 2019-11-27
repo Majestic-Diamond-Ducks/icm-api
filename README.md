@@ -10,6 +10,12 @@ Update system and install Maven and Java 8:
 sudo apt update
 sudo apt install maven -y
 sudo apt install openjdk-8-jre -y
+sudo apt install mysql-server -y
+```
+
+Configure the MySQL database:
+```bash
+sudo mysql_secure_installation
 ```
 
 Clone the project:
@@ -17,12 +23,14 @@ Clone the project:
 git clone https://github.com/Majestic-Diamond-Ducks/icm-api.git
 ```
 
+Configure the file inside `src/main/resources/application.properties.template` and copy it to `src/main/resources/application.properties`
+
 Run the API (while in the root directory of the project):
 ```bash
 mvn spring-boot:start
 ```
 
-Done! The API is running on http://localhost:8080/measurementss.
+Done! The API is running on http://localhost:8080/measurements.
 Remember to open port 8080 if you want it public.
 
 To stop the API:
@@ -34,7 +42,5 @@ mvn spring-boot:stop
 
 Method | URL | Type
 ------ | --- | ----
-GET | /sensors | Get all the measurements as JSON. You can also define the optional parameters `from`, `to`, `device` to narrow down the results. <br> <b>Example:</b> http://localhost:8080/measurementss?device=test&from=1571777668227
-POST | /sensors | Add a new measurement. The body must be a JSON in [this format](https://raw.githubusercontent.com/Majestic-Diamond-Ducks/Simple-Json-Client/master/document.json).
-DELETE | /sensors/delete/all | Erase all measurement recorded in the API.
-GET | /sensors/populate | Add a set of new measurement with different measurements and timestamp for testing.
+GET | /measurements | Get all the measurements as JSON. You can also define the optional parameters `from`, `to`, `device` to narrow down the results. <br> <b>Example:</b> http://localhost:8080/measurements?device=test&from=1571777668227
+DELETE | /measurements/delete/all | Erase all measurement recorded in the API.
